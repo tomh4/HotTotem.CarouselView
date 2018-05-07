@@ -42,6 +42,23 @@ namespace CarouselView
         /// <summary>
         /// The current position of the Carousel
         /// </summary>
+        public static readonly BindableProperty SpacingProperty =
+           BindableProperty.Create(propertyName: "Spacing",
+           returnType: typeof(int),
+           declaringType: typeof(Carousel),
+           defaultValue: 0,
+           defaultBindingMode: BindingMode.TwoWay);
+        /// <summary>
+        /// The current position of the Carousel
+        /// </summary>
+        public int Spacing
+        {
+            get { return (int)GetValue(SpacingProperty); }
+            set { SetValue(SpacingProperty, value); }
+        }
+        /// <summary>
+        /// The current position of the Carousel
+        /// </summary>
         public static readonly BindableProperty PositionProperty =
            BindableProperty.Create(propertyName: "Position",
            returnType: typeof(int),
@@ -267,6 +284,7 @@ namespace CarouselView
             var layout = new CustomStackLayout();
             layout.carouselParent = this;
             layout.Orientation = StackOrientation.Horizontal;
+            layout.Spacing = Spacing;
             carouselPagesCount = 0;
             carouselWidth = 0;
             carouselScrollPosition = 0;

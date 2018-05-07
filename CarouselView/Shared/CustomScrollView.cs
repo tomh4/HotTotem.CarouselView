@@ -22,10 +22,16 @@ namespace CarouselView.CustomControls
             for (int i = 0; i < placeHolderCount; i++)
             {
                 placeHolderOffset += (childViewSize + spacing);
-                var startPlaceHolder = carouselParent.ItemTemplate.CreateContent() as ViewCell;
-                startPlaceHolder.View.Opacity = 0;
+                var startPlaceHolder = new ViewCell
+                {
+                    View = new BoxView() { WidthRequest = childViewSize, Color = Color.White }
+                };
+                startPlaceHolder.View.Opacity = 1;
                 startPlaceHolder.View.InputTransparent = true;
-                var endPlaceHolder = carouselParent.ItemTemplate.CreateContent() as ViewCell;
+                var endPlaceHolder = new ViewCell
+                {
+                    View = new BoxView() { WidthRequest = childViewSize }
+                };
                 endPlaceHolder.View.Opacity = 0;
                 endPlaceHolder.View.InputTransparent = true;
                 layout.Children.Insert(0, startPlaceHolder.View);
