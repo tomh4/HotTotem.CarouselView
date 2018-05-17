@@ -114,6 +114,28 @@ namespace CarouselView
             set { SetValue(SnappingProperty, value); }
         }
         /// <summary>
+        /// Snapping Mode
+        /// </summary>
+        public static readonly BindableProperty SnapModeProperty =
+            BindableProperty.Create(propertyName: "SnapMode",
+            returnType: typeof(SnappingMode),
+            declaringType: typeof(Carousel),
+            defaultValue: SnappingMode.RollOut,
+            defaultBindingMode: BindingMode.OneWay);
+        /// <summary>
+        /// Set Snap Mode
+        /// </summary>
+        public SnappingMode SnapMode
+        {
+            get { return (SnappingMode)GetValue(SnappingProperty); }
+            set { SetValue(SnappingProperty, value); }
+        }
+        public enum SnappingMode
+        {
+            Instant,
+            RollOut
+        }
+        /// <summary>
         /// The relative Snap Position to which the carousel will snap
         /// relatively to the screen, vales between 0 (left) and 1 (right)
         /// </summary>
@@ -340,7 +362,7 @@ namespace CarouselView
         /// <summary>
         /// Not to be called
         /// </summary>
-        public async Task Snap()
+        public async Task Snap(int snapDirection = 0)
         {
             if (carouselScrollPosition < carouselScrollView.placeHolderOffset)
             {
@@ -369,15 +391,30 @@ namespace CarouselView
                 {
                     if (Snapping)
                     {
-                        snapOffset = carouselScrollView.scrollViewWidth * SnapPosition - carouselContentViewSize / 2;
-                        if (snapOffset < 0)
+                        if (snapDirection == 0)
                         {
-                            snapOffset = 0;
+                            snapOffset = carouselScrollView.scrollViewWidth * SnapPosition - carouselContentViewSize / 2;
+                            if (snapOffset < 0)
+                            {
+                                snapOffset = 0;
+                            }
+                            var desiredPosition = carouselScrollPosition - carouselScrollView.placeHolderOffset + snapOffset;
+                            desiredPosition = (carouselContentViewSize + carouselScrollView.spacing) * Math.Round((desiredPosition / (carouselContentViewSize + carouselScrollView.spacing)));
+                            desiredPosition -= snapOffset;
+                            await carouselScrollView.ScrollToAsync(carouselScrollView.placeHolderOffset + desiredPosition, 0, true);
                         }
-                        var desiredPosition = carouselScrollPosition - carouselScrollView.placeHolderOffset + snapOffset;
-                        desiredPosition = (carouselContentViewSize + carouselScrollView.spacing) * Math.Round((desiredPosition / (carouselContentViewSize + carouselScrollView.spacing)));
-                        desiredPosition -= snapOffset;
-                        await carouselScrollView.ScrollToAsync(carouselScrollView.placeHolderOffset + desiredPosition, 0, true);
+                        else
+                        {
+                            snapOffset = carouselScrollView.scrollViewWidth * SnapPosition - carouselContentViewSize / 2;
+                            if (snapOffset < 0)
+                            {
+                                snapOffset = 0;
+                            }
+                            var desiredPosition = carouselScrollPosition - carouselScrollView.placeHolderOffset + snapOffset;
+                            desiredPosition = (carouselContentViewSize + carouselScrollView.spacing + snapDirection) * Math.Round((desiredPosition / (carouselContentViewSize + carouselScrollView.spacing)));
+                            desiredPosition -= snapOffset;
+                            await carouselScrollView.ScrollToAsync(carouselScrollView.placeHolderOffset + desiredPosition, 0, true);
+                        }
                     }
                 }
             }
