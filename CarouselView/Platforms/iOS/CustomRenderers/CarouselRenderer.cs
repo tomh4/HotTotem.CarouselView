@@ -52,7 +52,7 @@ namespace CarouselView.iOS.CustomRenderers
         {
             isCurrentlyTouched = false;
             // Not always triggered, play around with scrolling speed
-            if (currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.Instant)
+            if (currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.Instant && !hasSnapped)
             {
                 hasSnapped = true;
                 await ((CustomScrollView)Element).carouselParent.Snap(scrollDirection);
@@ -62,10 +62,9 @@ namespace CarouselView.iOS.CustomRenderers
         private async void CarouselRenderer_DraggingEnded(object sender, DraggingEventArgs e)
         {
             isCurrentlyTouched = false;
-            // Not always triggered, play around with scrolling speed
             if (currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.RollOut)
             {
-                if (!isScrolling)
+                if (!isScrolling && !hasSnapped)
                 {
                     hasSnapped = true;
                     await ((CustomScrollView)Element).carouselParent.Snap();
@@ -73,7 +72,7 @@ namespace CarouselView.iOS.CustomRenderers
             }
             else
             {
-                if (!Decelerating)
+                if (!Decelerating && !hasSnapped)
                 {
                     if (currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.Instant)
                     {
