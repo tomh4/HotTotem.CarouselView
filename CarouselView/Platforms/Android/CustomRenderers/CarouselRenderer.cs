@@ -24,17 +24,19 @@ namespace CarouselView.Droid.CustomRenderers
         {
 
         }
-        private static float SlowDownThreshold = 2f;
+        private static readonly float SlowDownThreshold = 2f;
         HorizontalScrollView _scrollView;
         bool isCurrentlyTouched = false;
         bool hasSnapped = true;
         bool isScrolling = false;
-
+        int scrollDirection = 0;
+        CustomScrollView currentScrollView;
 
         protected override void OnElementChanged(VisualElementChangedEventArgs e)
         {
             base.OnElementChanged(e);
             if (e.NewElement == null) return;
+            currentScrollView = (CustomScrollView)e.NewElement;
             e.NewElement.PropertyChanged += ElementPropertyChanged;
         }
         
@@ -55,10 +57,23 @@ namespace CarouselView.Droid.CustomRenderers
 
         private async void _scrollView_ScrollChange(object sender, ScrollChangeEventArgs e)
         {
-            if (Math.Abs(e.ScrollX - e.OldScrollX) < SlowDownThreshold)
+            var scrollValue = e.ScrollX - e.OldScrollX;
+            if(scrollValue > 0)
+            {
+                scrollDirection = 1;
+            }
+            else if (scrollValue < 0)
+            {
+                scrollDirection = -1;
+            }
+            else
+            {
+                scrollDirection = 0;
+            }
+            if (Math.Abs(scrollValue) < SlowDownThreshold)
             {
                 isScrolling = false;
-                if (!isCurrentlyTouched && !hasSnapped)
+                if (!isCurrentlyTouched && !hasSnapped && currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.RollOut)
                 {
                     hasSnapped = true;
                     await((CustomScrollView)Element).carouselParent.Snap();
@@ -84,10 +99,21 @@ namespace CarouselView.Droid.CustomRenderers
                 case MotionEventActions.Up:
                     isCurrentlyTouched = false;
                     // Not always triggered, play around with scrolling speed
-                    if (!isScrolling)
+                    if (currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.RollOut)
                     {
-                        hasSnapped = true;
-                        await ((CustomScrollView)Element).carouselParent.Snap();
+                        if (!isScrolling)
+                        {
+                            hasSnapped = true;
+                            await ((CustomScrollView)Element).carouselParent.Snap();
+                        }
+                    }
+                    else
+                    {
+                        if(currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.Instant)
+                        {
+                            hasSnapped = true;
+                            await ((CustomScrollView)Element).carouselParent.Snap(scrollDirection);
+                        }
                     }
                     break;
             }

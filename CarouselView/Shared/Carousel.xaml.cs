@@ -127,8 +127,8 @@ namespace CarouselView
         /// </summary>
         public SnappingMode SnapMode
         {
-            get { return (SnappingMode)GetValue(SnappingProperty); }
-            set { SetValue(SnappingProperty, value); }
+            get { return (SnappingMode)GetValue(SnapModeProperty); }
+            set { SetValue(SnapModeProperty, value); }
         }
         public enum SnappingMode
         {
@@ -405,13 +405,30 @@ namespace CarouselView
                         }
                         else
                         {
+                            var currentScrollPosition = carouselScrollPosition - carouselScrollView.placeHolderOffset;
+                            var desiredCarouselPosition = 0d;
+                            if (snapDirection > 0)
+                            {
+                                desiredCarouselPosition = Math.Floor(currentScrollPosition / (carouselContentViewSize + carouselScrollView.spacing)) + snapDirection;
+                            }
+                            else
+                            {
+                                desiredCarouselPosition = Math.Ceiling(currentScrollPosition / (carouselContentViewSize + carouselScrollView.spacing)) + snapDirection;
+                            }
+                            if(desiredCarouselPosition < 0)
+                            {
+                                desiredCarouselPosition = 0;
+                            }
+                            else if(desiredCarouselPosition > carouselPagesCount)
+                            {
+                                desiredCarouselPosition = carouselPagesCount;
+                            }
                             snapOffset = carouselScrollView.scrollViewWidth * SnapPosition - carouselContentViewSize / 2;
                             if (snapOffset < 0)
                             {
                                 snapOffset = 0;
                             }
-                            var desiredPosition = carouselScrollPosition - carouselScrollView.placeHolderOffset + snapOffset;
-                            desiredPosition = (carouselContentViewSize + carouselScrollView.spacing + snapDirection) * Math.Round((desiredPosition / (carouselContentViewSize + carouselScrollView.spacing)));
+                            var desiredPosition = (carouselContentViewSize + carouselScrollView.spacing) * desiredCarouselPosition;
                             desiredPosition -= snapOffset;
                             await carouselScrollView.ScrollToAsync(carouselScrollView.placeHolderOffset + desiredPosition, 0, true);
                         }

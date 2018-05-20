@@ -12,7 +12,7 @@ namespace CarouselView.CustomControls
         public double placeHolderOffset, spacing;
         public double scrollViewWidth;
         private bool initialised = false;
-        private async void InitScrollView()
+        private void InitScrollView()
         {
             var layout = (CustomStackLayout)Content;
             var childViewSize = layout.Children[0].Width;
@@ -24,13 +24,13 @@ namespace CarouselView.CustomControls
                 placeHolderOffset += (childViewSize + spacing);
                 var startPlaceHolder = new ViewCell
                 {
-                    View = new BoxView() { WidthRequest = childViewSize, Color = Color.White }
+                    View = new BoxView() { WidthRequest = childViewSize, Color = Color.Transparent }
                 };
-                startPlaceHolder.View.Opacity = 1;
+                startPlaceHolder.View.Opacity = 0;
                 startPlaceHolder.View.InputTransparent = true;
                 var endPlaceHolder = new ViewCell
                 {
-                    View = new BoxView() { WidthRequest = childViewSize }
+                    View = new BoxView() { WidthRequest = childViewSize, Color = Color.Transparent }
                 };
                 endPlaceHolder.View.Opacity = 0;
                 endPlaceHolder.View.InputTransparent = true;
@@ -42,7 +42,7 @@ namespace CarouselView.CustomControls
             {
                 startPosition = 0;
             }
-            await ScrollToAsync(placeHolderOffset - startPosition, 0, false);
+            Device.BeginInvokeOnMainThread(async () => await ScrollToAsync(placeHolderOffset - startPosition, 0, false));
         }
         protected override void OnSizeAllocated(double width, double height)
         {
@@ -63,7 +63,7 @@ namespace CarouselView.CustomControls
             base.OnChildAdded(child);
             if (child is View childview)
             {
-                childview.GestureRecognizers.Add(carouselParent.tapGestureRecognizer);
+               childview.GestureRecognizers.Add(carouselParent.tapGestureRecognizer);
             }
         }
     }
