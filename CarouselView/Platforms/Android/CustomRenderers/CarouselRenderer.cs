@@ -63,12 +63,30 @@ namespace CarouselView.Droid.CustomRenderers
 
         private void Listener_OnTouchScrolled(object source, ScrollEventArgs e)
         {
-            throw new NotImplementedException();
+            hasSnapped = false;
+            isScrolling = true;
         }
 
-        private void Listener_OnTouchFlinged(object source, FlingEventArgs e)
+        private async void Listener_OnTouchFlinged(object source, FlingEventArgs e)
         {
-            throw new NotImplementedException();
+            isCurrentlyTouched = false;
+            // Not always triggered, play around with scrolling speed
+            if (currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.Instant && !hasSnapped)
+            {
+                hasSnapped = true;
+                if (e.velX < 0)
+                {
+                    await ((CustomScrollView)Element).carouselParent.Snap(1);
+                }
+                else if(e.velX > 0)
+                {
+                    await ((CustomScrollView)Element).carouselParent.Snap(-1);
+                }
+                else
+                {
+                    await ((CustomScrollView)Element).carouselParent.Snap(0);
+                }
+            }
         }
 
         private async void _scrollView_ScrollChange(object sender, ScrollChangeEventArgs e)
