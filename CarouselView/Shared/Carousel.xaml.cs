@@ -36,7 +36,7 @@ namespace CarouselView
         public event PositionChangedEventHandler OnPositionChanged;
         private double carouselWidth, carouselScrollPosition, carouselContentViewSize = 0;
         private DotButtonsLayout dotLayout;
-        public TapGestureRecognizer tapGestureRecognizer = new TapGestureRecognizer();
+        //public TapGestureRecognizer tapGestureRecognizer = new TapGestureRecognizer();
         private int carouselPagesCount;
         #region Other Properties
         /// <summary>
@@ -283,14 +283,14 @@ namespace CarouselView
         {
             InitializeComponent();
             carouselScrollView.carouselParent = this;
-            tapGestureRecognizer.Tapped += TapGestureRecognizer_Tapped;
+            //tapGestureRecognizer.Tapped += TapGestureRecognizer_Tapped;
         }
         protected override void OnChildAdded(Element child)
         {
             base.OnChildAdded(child);
             if (child is View childview)
             {
-                childview.GestureRecognizers.Add(tapGestureRecognizer);
+                //childview.GestureRecognizers.Add(tapGestureRecognizer);
             }
         }
         private void TapGestureRecognizer_Tapped(object sender, EventArgs e)

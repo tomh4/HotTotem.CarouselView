@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -32,6 +32,7 @@ namespace CarouselView.Droid.CustomRenderers
         int scrollDirection = 0;
         CustomScrollView currentScrollView;
         private GestureDetector _detector;
+        private int currenScrollPositionX;
 
 
         protected override void OnElementChanged(VisualElementChangedEventArgs e)
@@ -42,7 +43,6 @@ namespace CarouselView.Droid.CustomRenderers
             e.NewElement.PropertyChanged += ElementPropertyChanged;
         }
         
-
         void ElementPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Renderer")
@@ -51,83 +51,80 @@ namespace CarouselView.Droid.CustomRenderers
                     .GetField("_hScrollView", BindingFlags.NonPublic | BindingFlags.Instance)
                     .GetValue(this);
                 var listener = new GestureListener();
-                listener.OnTouchFlinged += Listener_OnTouchFlinged;
+                //listener.OnTouchFlinged += Listener_OnTouchFlinged;
                 listener.OnTouchScrolled += Listener_OnTouchScrolled;
                 _detector = new GestureDetector(this.Context, listener);
                 _scrollView.HorizontalScrollBarEnabled = false;
                 //_scrollView.Touch += _scrollView_Touch;
-                //_scrollView.ScrollChange += _scrollView_ScrollChange;
+                _scrollView.ScrollChange += _scrollView_ScrollChange;
+                _scrollView.SmoothScrollingEnabled = true;
             }
 
         }
-
         private void Listener_OnTouchScrolled(object source, ScrollEventArgs e)
         {
             hasSnapped = false;
             isScrolling = true;
-        }
-
-        private async void Listener_OnTouchFlinged(object source, FlingEventArgs e)
-        {
-            isCurrentlyTouched = false;
-            // Not always triggered, play around with scrolling speed
-            if (currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.Instant && !hasSnapped)
-            {
-                hasSnapped = true;
-                if (e.velX < 0)
-                {
-                    await ((CustomScrollView)Element).carouselParent.Snap(1);
-                }
-                else if(e.velX > 0)
-                {
-                    await ((CustomScrollView)Element).carouselParent.Snap(-1);
-                }
-                else
-                {
-                    await ((CustomScrollView)Element).carouselParent.Snap(0);
-                }
-            }
-        }
-
-        private async void _scrollView_ScrollChange(object sender, ScrollChangeEventArgs e)
-        {
-            var scrollValue = e.ScrollX - e.OldScrollX;
-            if(scrollValue > 0)
-            {
-                scrollDirection = 1;
-            }
-            else if (scrollValue < 0)
+            if(e.distX < 0)
             {
                 scrollDirection = -1;
             }
             else
             {
-                scrollDirection = 0;
+                scrollDirection = 1;
             }
-            if (Math.Abs(scrollValue) < SlowDownThreshold)
-            {
-                isScrolling = false;
-                if (!isCurrentlyTouched && !hasSnapped && currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.RollOut)
-                {
-                    hasSnapped = true;
-                    await((CustomScrollView)Element).carouselParent.Snap();
-                }
-            }
-            else
-            {
-                isScrolling = true;
-            }
+        }
+        
+        private async void Listener_OnTouchFlinged(object source, FlingEventArgs e)
+        {
+            // Not always triggered, play around with scrolling speed
+            //if (currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.Instant && !hasSnapped)
+            //{
+            //    hasSnapped = true;
+            //    if (e.velX < 0)
+            //    {
+            //        await ((CustomScrollView)Element).carouselParent.Snap(1);
+            //    }
+            //    else if (e.velX > 0)
+            //    {
+            //        await ((CustomScrollView)Element).carouselParent.Snap(-1);
+            //    }
+            //    else
+            //    {
+            //        await ((CustomScrollView)Element).carouselParent.Snap(0);
+            //    }
+            //}
+        }
 
+        private async void _scrollView_ScrollChange(object sender, ScrollChangeEventArgs e)
+        {
+            var scrollValue = e.ScrollX - e.OldScrollX;
+            currenScrollPositionX = e.ScrollX;
+            if(isCurrentlyTouched == false && !hasSnapped)
+            {
+                if (currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.Instant)
+                {
+                    _scrollView.SmoothScrollBy(0, 0);
+                    hasSnapped = true;
+                    await ((CustomScrollView)Element).carouselParent.Snap(scrollDirection);
+                }
+                else if(currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.RollOut)
+                {
+                    if (Math.Abs(scrollValue) < SlowDownThreshold)
+                    {
+                        {
+                            _scrollView.SmoothScrollBy(0, 0);
+                            hasSnapped = true;
+                            await ((CustomScrollView)Element).carouselParent.Snap();
+                        }
+                    }
+                }
+            }           
         }
         public override bool OnTouchEvent(MotionEvent ev)
         {
             _detector.OnTouchEvent(ev);
-            return base.OnTouchEvent(ev);
-        }
-        private async void _scrollView_Touch(object sender, TouchEventArgs e)
-        {
-            e.Handled = false;
-            switch (e.Event.Action)
+            switch (ev.Action)
             {
                 case MotionEventActions.Move:
                     hasSnapped = false;
@@ -136,25 +133,42 @@ namespace CarouselView.Droid.CustomRenderers
                 case MotionEventActions.Cancel:
                 case MotionEventActions.Up:
                     isCurrentlyTouched = false;
-                    // Not always triggered, play around with scrolling speed
-                    if (currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.RollOut)
-                    {
-                        if (!isScrolling && !hasSnapped)
-                        {
-                            hasSnapped = true;
-                            await ((CustomScrollView)Element).carouselParent.Snap();
-                        }
-                    }
-                    else
-                    {
-                        if(currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.Instant && !hasSnapped)
-                        {
-                            hasSnapped = true;
-                            await ((CustomScrollView)Element).carouselParent.Snap(scrollDirection);
-                        }
-                    }
                     break;
             }
+            return base.OnTouchEvent(ev);
+        }
+        private async void _scrollView_Touch(object sender, TouchEventArgs e)
+        {
+            //e.Handled = false;
+            //switch (e.Event.Action)
+            //{
+            //    case MotionEventActions.Move:
+            //        hasSnapped = false;
+            //        isCurrentlyTouched = true;
+            //        break;
+            //    case MotionEventActions.Cancel:
+            //    case MotionEventActions.Up:
+            //        isCurrentlyTouched = false;
+            //        // Not always triggered, play around with scrolling speed
+            //        if (currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.RollOut)
+            //        {
+            //            if (!isScrolling && !hasSnapped)
+            //            {
+            //                hasSnapped = true;
+            //                await ((CustomScrollView)Element).carouselParent.Snap();
+            //            }
+            //        }
+            //        else
+            //        {
+            //            if(currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.Instant && !hasSnapped)
+            //            {
+            //                hasSnapped = true;
+            //                _scrollView.SmoothScrollTo(currenScrollPositionX, 0);
+            //                await ((CustomScrollView)Element).carouselParent.Snap(scrollDirection);
+            //            }
+            //        }
+            //        break;
+            //}
         }
     }
     delegate void FlingEventHandler(object source, FlingEventArgs e);

@@ -63,7 +63,7 @@ namespace CarouselView.CustomControls
             base.OnChildAdded(child);
             if (child is View childview)
             {
-               childview.GestureRecognizers.Add(carouselParent.tapGestureRecognizer);
+               //childview.GestureRecognizers.Add(carouselParent.tapGestureRecognizer);
             }
         }
     }
