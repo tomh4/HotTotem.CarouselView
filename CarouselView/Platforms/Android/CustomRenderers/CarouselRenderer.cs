@@ -74,11 +74,10 @@ namespace CarouselView.Droid.CustomRenderers
         {
             var scrollValue = e.ScrollX - e.OldScrollX;
             currenScrollPositionX = e.ScrollX;
-            if(isCurrentlyTouched == false && !hasSnapped)
+            if(!isCurrentlyTouched && !hasSnapped)
             {
                 if (currentScrollView.carouselParent.SnapMode == Carousel.SnappingMode.Instant)
                 {
-                    _scrollView.SmoothScrollBy(0, 0);
                     hasSnapped = true;
                     await ((CustomScrollView)Element).carouselParent.Snap(scrollDirection);
                 }
@@ -86,11 +85,9 @@ namespace CarouselView.Droid.CustomRenderers
                 {
                     if (Math.Abs(scrollValue) < SlowDownThreshold)
                     {
-                        {
-                            _scrollView.SmoothScrollBy(0, 0);
-                            hasSnapped = true;
-                            await ((CustomScrollView)Element).carouselParent.Snap();
-                        }
+                        _scrollView.SmoothScrollBy(10*scrollDirection, 0);
+                        hasSnapped = true;
+                        await ((CustomScrollView)Element).carouselParent.Snap();                        
                     }
                 }
             }           
