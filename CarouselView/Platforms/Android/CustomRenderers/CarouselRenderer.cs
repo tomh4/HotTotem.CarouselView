@@ -30,6 +30,7 @@ namespace CarouselView.Droid.CustomRenderers
         bool hasSnapped = true;
         int scrollDirection = 0;
         CustomScrollView currentScrollView;
+        private GestureDetector _detector;
         private int currenScrollPositionX;
 
 
@@ -48,11 +49,25 @@ namespace CarouselView.Droid.CustomRenderers
                 _scrollView = (HorizontalScrollView)typeof(ScrollViewRenderer)
                     .GetField("_hScrollView", BindingFlags.NonPublic | BindingFlags.Instance)
                     .GetValue(this);
+                var listener = new GestureListener();
+                listener.OnTouchScrolled += Listener_OnTouchScrolled;
+                _detector = new GestureDetector(this.Context, listener);
                 _scrollView.HorizontalScrollBarEnabled = false;
                 _scrollView.ScrollChange += _scrollView_ScrollChange;
                 _scrollView.SmoothScrollingEnabled = true;
             }
 
+        }
+        private void Listener_OnTouchScrolled(object source, ScrollEventArgs e)
+        {
+            if(e.distX < 0)
+            {
+                scrollDirection = -1;
+            }
+            else
+            {
+                scrollDirection = 1;
+            }
         }
 
         private async void _scrollView_ScrollChange(object sender, ScrollChangeEventArgs e)
@@ -82,6 +97,7 @@ namespace CarouselView.Droid.CustomRenderers
         }
         public override bool OnTouchEvent(MotionEvent ev)
         {
+            _detector.OnTouchEvent(ev);
             switch (ev.Action)
             {
                 case MotionEventActions.Move:
@@ -94,6 +110,30 @@ namespace CarouselView.Droid.CustomRenderers
                     break;
             }
             return base.OnTouchEvent(ev);
+        }
+    }
+    delegate void ScrollEventHandler(object source, ScrollEventArgs e);
+    class ScrollEventArgs : EventArgs
+    {
+        public MotionEvent ev1;
+        public MotionEvent ev2;
+        public float distX;
+        public float distY;
+    }
+    class GestureListener : GestureDetector.SimpleOnGestureListener
+    {
+        public event ScrollEventHandler OnTouchScrolled;
+        public override bool OnScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
+        {
+            OnTouchScrolled?.Invoke(this, new ScrollEventArgs()
+            {
+                ev1 = e1,
+                ev2 = e2,
+                distX = distanceX,
+                distY = distanceY
+
+            });
+            return base.OnScroll(e1, e2, distanceX, distanceY);
         }
     }
 }    
