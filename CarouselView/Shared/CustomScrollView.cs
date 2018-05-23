@@ -4,7 +4,7 @@ using System.Text;
 using Xamarin.Forms;
 
 
-namespace CarouselView.CustomControls
+namespace HotTotem.CarouselView.CustomControls
 {
     public class CustomScrollView : ScrollView
     {

@@ -7,10 +7,10 @@
     <PackageId>HotTotem.CarouselView</PackageId>
 
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <AssemblyVersion>1.0.1</AssemblyVersion>
-    <AssemblyFileVersion>1.0.1</AssemblyFileVersion>
-    <Version>1.0.1</Version>
-    <PackageVersion>1.0.1</PackageVersion>
+    <AssemblyVersion>1.0.1.1</AssemblyVersion>
+    <AssemblyFileVersion>1.0.1.1</AssemblyFileVersion>
+    <Version>1.0.1.1</Version>
+    <PackageVersion>1.0.1.1</PackageVersion>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -21,8 +21,8 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 
     <!--TODO: Fill these in-->
-    <PackageProjectUrl>https://github.com/tomh4/FormsCarouselView</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/tomh4/FormsCarouselView</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/tomh4/HotTotem.CarouselView</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/tomh4/HotTotem.CarouselView</RepositoryUrl>
     <PackageTags>xamarin, windows, ios, android, xamarin.forms, plugin, HotTotem.CarouselView</PackageTags>
 
     <Title>HotTotem.CarouselView Plugin for Xamarin Forms</Title>

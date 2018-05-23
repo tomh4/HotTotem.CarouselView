@@ -11,12 +11,12 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using CarouselView.CustomControls;
-using CarouselView.Droid.CustomRenderers;
+using HotTotem.CarouselView.CustomControls;
+using HotTotem.CarouselView.Droid.CustomRenderers;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 [assembly: ExportRenderer(typeof(CustomScrollView), typeof(CarouselRenderer))]
-namespace CarouselView.Droid.CustomRenderers
+namespace HotTotem.CarouselView.Droid.CustomRenderers
 {
     public class CarouselRenderer : ScrollViewRenderer
     {

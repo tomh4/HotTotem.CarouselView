@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:CarouselViewTestApp"
              x:Class="CarouselViewTestApp.MainPage"
              BackgroundColor="AliceBlue"
-             xmlns:custom="clr-namespace:CarouselView;assembly=HotTotem.CarouselView">
+             xmlns:custom="clr-namespace:HotTotem.CarouselView;assembly=HotTotem.CarouselView">
 
     <StackLayout Padding="20">
         <custom:Carousel x:Name="carousel" Snapping="True" SnapPosition="0.5" Indicators="True" IndicatorsColor="Black">

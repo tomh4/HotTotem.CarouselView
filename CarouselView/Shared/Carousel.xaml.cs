@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
-using CarouselView.CustomControls;
+using HotTotem.CarouselView.CustomControls;
 
-namespace CarouselView
+namespace HotTotem.CarouselView
 {
     /// <summary>
     /// EventHandler for PositionChanged event.

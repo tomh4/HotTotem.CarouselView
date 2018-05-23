@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CarouselView;
-using CarouselView.iOS.CustomRenderers;
+using HotTotem.CarouselView;
+using HotTotem.CarouselView.iOS.CustomRenderers;
 using Foundation;
 using UIKit;
 using Xamarin.Forms;
-using CarouselView.CustomControls;
+using HotTotem.CarouselView.CustomControls;
 using Xamarin.Forms.Platform.iOS;
 using System.ComponentModel;
 
 [assembly: ExportRenderer(typeof(CustomScrollView), typeof(CarouselRenderer))]
-namespace CarouselView.iOS.CustomRenderers
+namespace HotTotem.CarouselView.iOS.CustomRenderers
 {
     public class CarouselRenderer : ScrollViewRenderer
     {
